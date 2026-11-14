@@ -1120,9 +1120,11 @@ def _validate_report_contract(wb: openpyxl.Workbook, errors: list[str]) -> None:
         if status_value == ReconciliationStatus.PRICE_MISMATCH.value:
             po = str(ws_rec.cell(row, 5).value or "")
             price_statuses[po] = price_statuses.get(po, 0) + 1
-        elif status_value != ReconciliationStatus.RECONCILED.value:
-            if (ws_rec.cell(row, 1).value, status_value) not in po_exception_keys:
-                errors.append(f"Reconciled Records!U{row} lacks its primary source-row exception.")
+        elif (
+            status_value != ReconciliationStatus.RECONCILED.value
+            and (ws_rec.cell(row, 1).value, status_value) not in po_exception_keys
+        ):
+            errors.append(f"Reconciled Records!U{row} lacks its primary source-row exception.")
     if price_statuses != price_exceptions:
         errors.append("PRICE_MISMATCH statuses do not match price exceptions by PO number.")
 
